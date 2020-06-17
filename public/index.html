@@ -5,10 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="./css/index.css">
   <script src="/socket.io/socket.io.js"></script>
-  <script src="./js/index.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <title>안녕</title>
 </head>
 <body>
+  <div id="g_id_onload"
+    data-client_id="508138974042-662vkjor3vfa9gdqr449vqk2088gchpu.apps.googleusercontent.com"
+    data-callback="handleRes"
+  >
+  </div>
+  <div class="g_id_signout">
+    <button id="signout_button">sign out</button> 
+  </div>
   <div class="main">
     반갑습니다!
     <div class="box">
@@ -16,5 +24,6 @@
       <button onclick="send()">전송</button>
     </div>
   </div>
+  <script src="./js/index.js"></script>
 </body>
 </html>

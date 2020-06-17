@@ -27,6 +27,17 @@ app.get('/', function(request, response) {
   })
 });
 
+app.post('/login', function(request, response) {
+  fs.readFile("./public/login.html", function(err, data) {
+    if(err) {
+      response.send("에러");
+    } else {
+      response.writeHead(200, {'content-type' : 'text/html'});
+      response.write(data);
+      response.end();
+    }
+  })
+});
 // io.sockets.on("connection", function(socket) {
 //   console.log("유저 접속 됨");
   

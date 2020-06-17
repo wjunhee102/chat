@@ -5,3 +5,13 @@
   text-align: center;
   width: 200px;
 }
+#g_id_onload {
+  position: relative;
+  z-index: 10;
+  width: 100px;
+  height: 100px;
+}
+.g_id_signout {
+  width: 100px;
+  height: 100px;
+}
