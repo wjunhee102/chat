@@ -28,6 +28,7 @@ app.get('/', function(request, response) {
 });
 
 app.post('/login', function(request, response) {
+  console.log(request.headers.cookie)
   fs.readFile("./public/login.html", function(err, data) {
     if(err) {
       response.send("에러");

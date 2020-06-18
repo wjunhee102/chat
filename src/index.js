@@ -22,23 +22,26 @@ function send() {
 
   socket.emit("message", {type: "message", message: message})
 }
+socket.on("connect", function() {
+  var name = prompt("이름을 알려주세요",0);
+
+  if(!name) {
+    name = "익명"
+  }
+
+  socket.emit("newUser", name)
+});
+
+socket.on("update", function(data) {
+  console.log(`${data.name}: ${data.message}`)
+});
 
 function handleRes(res) {
-  console.log(res)
+  console.log(res)  
+}
 
-  socket.on("connect", function() {
-    var name = prompt("이름을 알려주세요",0);
-  
-    if(!name) {
-      name = "익명"
-    }
-  
-    socket.emit("newUser", name)
-  });
-  
-  socket.on("update", function(data) {
-    console.log(`${data.name}: ${data.message}`)
-  });
+function handleRes2(res) {
+  console.log(res)  
 }
 
 // const button = document.getElementById('signout_button');
