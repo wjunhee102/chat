@@ -1,20 +1,5 @@
 var socket = io();
 
-// socket.on("connect", function() {
-//   var input = document.getElementById("test");
-//   input.value = '접속 됨'
-// })
-
-// function send() {
-//   var message = document.getElementById("test").value
-
-//   document.getElementById("test").value = ""
-
-//   socket.emit("send", {msg: message})
-// }
-
-
-
 function send() {
   var message = document.getElementById("test").value
   
@@ -22,6 +7,7 @@ function send() {
 
   socket.emit("message", {type: "message", message: message})
 }
+
 socket.on("connect", function() {
   var name = prompt("이름을 알려주세요",0);
 

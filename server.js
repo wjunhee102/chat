@@ -1,16 +1,18 @@
-const fs = require("fs");
-
+const fs      = require("fs");
 const express = require("express");
+const socket  = require("socket.io");
+const http    = require("http");
+const crypto  = require("crypto");
+const models  = require("../models");
 
-const socket = require("socket.io");
-
-const http = require("http");
-
-const app = express();
-
+const app    = express(); 
 const server = http.createServer(app);
+const io     = socket(server);
+const router = app.Router();
 
-const io = socket(server);
+router.post("/sign_up", async function(request, response, next) {
+
+})
 
 app.use("/css", express.static("./public"));
 app.use("/js", express.static("./src"));
@@ -28,7 +30,7 @@ app.get('/', function(request, response) {
 });
 
 app.post('/login', function(request, response) {
-  console.log(request.headers.cookie)
+  console.log(request)
   fs.readFile("./public/login.html", function(err, data) {
     if(err) {
       response.send("에러");
@@ -39,6 +41,10 @@ app.post('/login', function(request, response) {
     }
   })
 });
+
+app.post('/sign-up',function(request, response) {
+
+})
 // io.sockets.on("connection", function(socket) {
 //   console.log("유저 접속 됨");
   
