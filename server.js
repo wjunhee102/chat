@@ -2,17 +2,15 @@ const fs      = require("fs");
 const express = require("express");
 const socket  = require("socket.io");
 const http    = require("http");
-const crypto  = require("crypto");
-const models  = require("../models");
+const querystring = require("querystring");
+// const crypto  = require("crypto");
+// const models  = require("../models");
 
 const app    = express(); 
 const server = http.createServer(app);
 const io     = socket(server);
-const router = app.Router();
+// const router = app.Router();
 
-router.post("/sign_up", async function(request, response, next) {
-
-})
 
 app.use("/css", express.static("./public"));
 app.use("/js", express.static("./src"));
@@ -43,8 +41,44 @@ app.post('/login', function(request, response) {
 });
 
 app.post('/sign-up',function(request, response) {
-
+  console.log(request)
+  // fs.readFile("./data/user.json", function(err, data) {
+  //   if(err) {
+  //     response.send("에러");
+  //   } else {
+  //     response.writeHead(200, {'content-type' : 'application/json'});
+  //     response.write(data);
+  //     response.end();
+  //   }
+  // })
+  response.send("안녕")
 })
+
+let users = [
+  {
+    id : 1,
+    name : "hello"
+  }
+]
+
+app.get('/users', (req, res) => {
+  console.log(req);
+  return res.json(users);
+})
+
+// app.post('/sign-up',function(request, response) {
+//     request({
+//       method: "POST",
+//       json: true,   // <--Very important!!!
+//       body: myJSONObject
+//   }, function (error, response, body){
+//       console.log(response);
+//   });
+//   // console.log(request);
+//   // response.send("성공!");
+//   // response.end();
+// })
+
 // io.sockets.on("connection", function(socket) {
 //   console.log("유저 접속 됨");
   
