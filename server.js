@@ -60,7 +60,7 @@ let nowUsersCount = 0;
 //   return res.json(users1);
 // })
 
-app.post('/sign-up',function(request, response) {
+app.post('/sign-up', function(request, response) {
   if(nowUsersCount >= 5) return response.end();
   
   nowUsersCount++
@@ -73,10 +73,12 @@ app.post('/sign-up',function(request, response) {
         nowUsersCount--
       }, 500);
 
-      return response.json({
-        res : "error",
+      response.json({
+        status : "error",
         message : "overlap"
-      })
+      });
+
+      return 
     }
   }
 
@@ -85,13 +87,46 @@ app.post('/sign-up',function(request, response) {
   fs.writeFileSync("./data/user.json", JSON.stringify(usersData, null, 2));
 
   response.json({
-    res : "sucess",
+    status : "sucess",
     message : "sucess"
   });
 
   nowUsersCount--;
 
   response.end();
+})
+
+app.post('/sign-in', function(request, response) {
+  if(nowUsersCount >= 5) return response.end();
+  
+  nowUsersCount++
+
+  const data = request.body;
+
+  for(let i = 0; i < usersData.user.length; i++) {
+    if(usersData.user[i].email === data.email && usersData.user[i].password === data.password) {
+      console.log(usersData.user[i].name.first)
+      nowUsersCount--
+      
+      response.json({
+        email : usersData.user[i].email,
+        name : usersData.user[i].name
+      });
+
+      return
+    } 
+  }
+ 
+  setTimeout(()=>{
+    nowUsersCount--
+  }, 500);
+
+  response.json({
+    status : "error",
+    message : "undefined"
+  })
+  
+  return
 })
 
 io.sockets.on("connection", function(socket) {
