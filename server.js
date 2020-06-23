@@ -1,96 +1,98 @@
 const fs      = require("fs");
 const express = require("express");
+const cors    = require("cors"); 
 const socket  = require("socket.io");
 const http    = require("http");
 const querystring = require("querystring");
-// const crypto  = require("crypto");
-// const models  = require("../models");
+
+//user 정보
+const usersData = require("./data/user.json");
+
 
 const app    = express(); 
 const server = http.createServer(app);
 const io     = socket(server);
-// const router = app.Router();
 
+app.use(cors());
+app.use(express.json());
 
 app.use("/css", express.static("./public"));
 app.use("/js", express.static("./src"));
 
-app.get('/', function(request, response) {
-  fs.readFile("./public/index.html", function(err, data) {
-    if(err) {
-      response.send("에러");
-    } else {
-      response.writeHead(200, {'content-type' : 'text/html'});
-      response.write(data);
-      response.end();
-    }
-  })
-});
+// 접속 제한
+let nowUsersCount = 0;
 
-app.post('/login', function(request, response) {
-  console.log(request)
-  fs.readFile("./public/login.html", function(err, data) {
-    if(err) {
-      response.send("에러");
-    } else {
-      response.writeHead(200, {'content-type' : 'text/html'});
-      response.write(data);
-      response.end();
-    }
-  })
-});
+// app.get('/', function(request, response) {
+//   if(nowUsersCount >= 1) return response.send(err)
+//   fs.readFile("./public/index.html", function(err, data) {
+//     if(err) {
+//       response.send("에러");
+//     } else {
+//       response.writeHead(200, {'content-type' : 'text/html'});
+//       response.write(data);
+//       response.end();
+//     }
+//   })
+// });
 
-app.post('/sign-up',function(request, response) {
-  console.log(request)
-  // fs.readFile("./data/user.json", function(err, data) {
-  //   if(err) {
-  //     response.send("에러");
-  //   } else {
-  //     response.writeHead(200, {'content-type' : 'application/json'});
-  //     response.write(data);
-  //     response.end();
-  //   }
-  // })
-  response.send("안녕")
-})
+// app.post('/login', function(request, response) {
+//   console.log(request)
+//   fs.readFile("./public/login.html", function(err, data) {
+//     if(err) {
+//       response.send("에러");
+//     } else {
+//       response.writeHead(200, {'content-type' : 'text/html'});
+//       response.write(data);
+//       response.end();
+//     }
+//   })
+// });
 
-let users = [
-  {
-    id : 1,
-    name : "hello"
-  }
-]
+// let users1 = [
+//   {
+//     id : 1,
+//     name : "hello"
+//   }
+// ]
 
-app.get('/users', (req, res) => {
-  console.log(req);
-  return res.json(users);
-})
-
-// app.post('/sign-up',function(request, response) {
-//     request({
-//       method: "POST",
-//       json: true,   // <--Very important!!!
-//       body: myJSONObject
-//   }, function (error, response, body){
-//       console.log(response);
-//   });
-//   // console.log(request);
-//   // response.send("성공!");
-//   // response.end();
+// app.get('/users', (req, res) => {
+//   console.log(req);
+//   return res.json(users1);
 // })
 
-// io.sockets.on("connection", function(socket) {
-//   console.log("유저 접속 됨");
+app.post('/sign-up',function(request, response) {
+  if(nowUsersCount >= 5) return response.end();
   
-//   socket.on("send", function(data) {
-//     console.log("전달된 메세지:", data.msg);
-//   })
+  nowUsersCount++
 
-//   socket.on("disconnect", function() {
-//     console.log("접속 종료");
-//   })
+  const data = request.body;
+  for(let i = 0; i < usersData.user.length; i++) {
+    if(usersData.user[i].email === data.email) {
+      
+      setTimeout(()=>{
+        nowUsersCount--
+      }, 500);
 
-// });
+      return response.json({
+        res : "error",
+        message : "overlap"
+      })
+    }
+  }
+
+  usersData.user.push(data)
+
+  fs.writeFileSync("./data/user.json", JSON.stringify(usersData, null, 2));
+
+  response.json({
+    res : "sucess",
+    message : "sucess"
+  });
+
+  nowUsersCount--;
+
+  response.end();
+})
 
 io.sockets.on("connection", function(socket) {
   socket.on("newUser", function(name) {
@@ -121,4 +123,6 @@ server.listen(8085, function () {
   console.log('서버 실행 중...');
 });
 
-
+// let rawData = fs.readFileSync("./data/user.json");
+// let users = JSON.parse(userData);
+// console.log(users);

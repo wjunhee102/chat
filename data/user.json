@@ -1,12 +1,31 @@
 {
-  "user" : [
+  "user": [
     {
-      "id" : "wjunhee102",
-      "password" : "1234"
+      "email": "emap@export.co.kr",
+      "name": {
+        "first": "준희",
+        "last": "황"
+      },
+      "password": "1111",
+      "checkPw": "1111"
     },
     {
-      "id" : "junhee",
-      "password" : "1234"
+      "email": "zzzzzzz",
+      "name": {
+        "first": "준희",
+        "last": "황"
+      },
+      "password": "1111",
+      "checkPw": "1111"
+    },
+    {
+      "email": "zzzzzzzzzz",
+      "name": {
+        "first": "준희",
+        "last": "황"
+      },
+      "password": "1111",
+      "checkPw": "1111"
     }
   ]
 }
