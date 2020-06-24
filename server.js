@@ -7,6 +7,7 @@ const querystring = require("querystring");
 
 //user 정보
 const usersData = require("./data/user.json");
+const { isRegExp } = require("util");
 
 
 const app    = express(); 
@@ -21,6 +22,127 @@ app.use("/js", express.static("./src"));
 
 // 접속 제한
 let nowUsersCount = 0;
+
+
+// 회원가입 API
+app.post('/sign-up', function(request, response) {
+  if(nowUsersCount >= 5) return response.end("full");
+  
+  nowUsersCount++;
+
+  const data = request.body;
+
+  const checkEmail = new RegExp(/^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i);
+  const checkPassword = new RegExp(/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,16}$/);
+
+  console.log(checkEmail.test(data.email), checkPassword.test(data.password), data.password)
+  if(!checkEmail.test(data.email) || !checkPassword.test(data.password)) {
+    const errMessage = checkEmail.test(data.email)? "pwTypeError" : "emailTypeError" 
+    response.json({
+      status : "error",
+      message : errMessage
+    });
+  } else {
+    const user = usersData.user.filter(ele=> ele.email == data.email);
+
+    console.log(user, typeof(user), user==null, user[0] == null);
+    
+    if(user[0]) {
+      
+      response.json({
+        status : "error",
+        message : "overlap"
+      });
+
+    } else {  
+      usersData.user.push(data)
+
+      fs.writeFileSync("./data/user.json", JSON.stringify(usersData, null, 2));
+
+      response.json({
+        status : "sucess",
+        message : "sucess"
+      });
+
+      nowUsersCount--;
+      
+    }
+  }
+
+  setTimeout(()=>{
+    nowUsersCount--
+  }, 500);
+
+  response.end();
+})
+
+
+// 로그인 API
+app.post('/sign-in', function(request, response) {
+  if(nowUsersCount >= 5) return response.end();
+  
+  nowUsersCount++
+
+  const data = request.body;
+
+  const user = usersData.user.filter(ele=> ele.email == data.email && ele.password == data.password);
+
+  console.log(user, typeof(user), user[0] == null);
+
+  if(user[0]) {
+    
+    response.json({
+      email : user[0].email,
+      name : user[0].name
+    });
+
+  } else {
+    response.json({
+      status : "error",
+      message : "undefined"
+    })
+  }
+
+ 
+  setTimeout(()=>{
+    nowUsersCount--
+  }, 500);
+
+  response.end();
+})
+
+io.sockets.on("connection", function(socket) {
+  socket.on("newUser", function(name) {
+    console.log(name + " 님이 접속하였습니다.");
+
+    socket.name = name;
+
+    io.sockets.emit("updata", {type: "connect", name: "SERVER", message: name + "님이 접속하였습니다."});
+  });
+
+  socket.on("message", function(data) {
+    data.name = socket.name
+    
+    console.log(data);
+
+    socket.broadcast.emit("update", data);
+  });
+
+  socket.on("disconnect", function() {
+    console.log(socket.name + "님이 나가셨습니다.")
+
+    socket.broadcast.emit("update", {type: "disconnect", name: "SERVER", message: socket.name + "님이 나가셨습니다."});
+  })
+})
+
+
+server.listen(8085, function () {
+  console.log('서버 실행 중...');
+});
+
+// let rawData = fs.readFileSync("./data/user.json");
+// let users = JSON.parse(userData);
+// console.log(users);
 
 // app.get('/', function(request, response) {
 //   if(nowUsersCount >= 1) return response.send(err)
@@ -59,105 +181,3 @@ let nowUsersCount = 0;
 //   console.log(req);
 //   return res.json(users1);
 // })
-
-app.post('/sign-up', function(request, response) {
-  if(nowUsersCount >= 5) return response.end();
-  
-  nowUsersCount++
-
-  const data = request.body;
-  for(let i = 0; i < usersData.user.length; i++) {
-    if(usersData.user[i].email === data.email) {
-      
-      setTimeout(()=>{
-        nowUsersCount--
-      }, 500);
-
-      response.json({
-        status : "error",
-        message : "overlap"
-      });
-
-      return 
-    }
-  }
-
-  usersData.user.push(data)
-
-  fs.writeFileSync("./data/user.json", JSON.stringify(usersData, null, 2));
-
-  response.json({
-    status : "sucess",
-    message : "sucess"
-  });
-
-  nowUsersCount--;
-
-  response.end();
-})
-
-app.post('/sign-in', function(request, response) {
-  if(nowUsersCount >= 5) return response.end();
-  
-  nowUsersCount++
-
-  const data = request.body;
-
-  for(let i = 0; i < usersData.user.length; i++) {
-    if(usersData.user[i].email === data.email && usersData.user[i].password === data.password) {
-      console.log(usersData.user[i].name.first)
-      nowUsersCount--
-      
-      response.json({
-        email : usersData.user[i].email,
-        name : usersData.user[i].name
-      });
-
-      return
-    } 
-  }
- 
-  setTimeout(()=>{
-    nowUsersCount--
-  }, 500);
-
-  response.json({
-    status : "error",
-    message : "undefined"
-  })
-  
-  return
-})
-
-io.sockets.on("connection", function(socket) {
-  socket.on("newUser", function(name) {
-    console.log(name + " 님이 접속하였습니다.");
-
-    socket.name = name;
-
-    io.sockets.emit("updata", {type: "connect", name: "SERVER", message: name + "님이 접속하였습니다."});
-  });
-
-  socket.on("message", function(data) {
-    data.name = socket.name
-    
-    console.log(data);
-
-    socket.broadcast.emit("update", data);
-  });
-
-  socket.on("disconnect", function() {
-    console.log(socket.name + "님이 나가셨습니다.")
-
-    socket.broadcast.emit("update", {type: "disconnect", name: "SERVER", message: socket.name + "님이 나가셨습니다."});
-  })
-})
-
-
-server.listen(8085, function () {
-  console.log('서버 실행 중...');
-});
-
-// let rawData = fs.readFileSync("./data/user.json");
-// let users = JSON.parse(userData);
-// console.log(users);
