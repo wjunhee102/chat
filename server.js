@@ -32,22 +32,25 @@ app.post('/sign-up', function(request, response) {
 
   const data = request.body;
 
-  const checkEmail = new RegExp(/^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i);
-  const checkPassword = new RegExp(/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,16}$/);
+  const regEmail = new RegExp(/^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i);
+  const regPassword = new RegExp(/^(?=.*[a-zA-Z])(?=.*[!@#$%^*+=-])(?=.*[0-9]).{8,16}$/);
+  
+  const checkEmail = regEmail.test(data.email);
+  const checkPassword = regPassword.test(data.password);
 
-  console.log(checkEmail.test(data.email), checkPassword.test(data.password), data.password)
-  if(!checkEmail.test(data.email) || !checkPassword.test(data.password)) {
-    const errMessage = checkEmail.test(data.email)? "pwTypeError" : "emailTypeError" 
+  console.log(checkEmail, checkPassword, data.password);
+  if(!checkEmail || !checkPassword){
+    const errMessage = checkEmail? "pwTypeError" : "emailTypeError" 
     response.json({
       status : "error",
       message : errMessage
     });
   } else {
-    const user = usersData.user.filter(ele=> ele.email == data.email);
+    const user = usersData.user.filter(ele=> ele.email == data.email)[0];
 
-    console.log(user, typeof(user), user==null, user[0] == null);
+    console.log(user, typeof(user), user==null, user == null);
     
-    if(user[0]) {
+    if(user) {
       
       response.json({
         status : "error",
@@ -85,15 +88,15 @@ app.post('/sign-in', function(request, response) {
 
   const data = request.body;
 
-  const user = usersData.user.filter(ele=> ele.email == data.email && ele.password == data.password);
+  const user = usersData.user.filter(ele=> ele.email == data.email && ele.password == data.password)[0];
 
-  console.log(user, typeof(user), user[0] == null);
+  console.log(user, typeof(user), user == null);
 
-  if(user[0]) {
+  if(user) {
     
     response.json({
-      email : user[0].email,
-      name : user[0].name
+      email : user.email,
+      name : user.name
     });
 
   } else {
