@@ -113,6 +113,7 @@ app.post('/sign-in', function(request, response) {
   response.end();
 })
 
+// sockets 통신
 io.sockets.on("connection", function(socket) {
   socket.on("newUser", function(name) {
     console.log(name + " 님이 접속하였습니다.");
