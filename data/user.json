@@ -53,6 +53,15 @@
       },
       "password": "rlacl123!",
       "checkPw": "rlacl123!"
+    },
+    {
+      "email": "test@naver.net",
+      "name": {
+        "first": "준희",
+        "last": "황"
+      },
+      "password": "1q2w3e4r!",
+      "checkPw": "1q2w3e4r!"
     }
   ]
 }

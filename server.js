@@ -39,8 +39,10 @@ app.post('/sign-up', function(request, response) {
   const checkPassword = regPassword.test(data.password);
 
   console.log(checkEmail, checkPassword, data.password);
+
   if(!checkEmail || !checkPassword){
     const errMessage = checkEmail? "pwTypeError" : "emailTypeError" 
+    
     response.json({
       status : "error",
       message : errMessage
