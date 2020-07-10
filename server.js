@@ -149,18 +149,18 @@ server.listen(8085, function () {
 // let users = JSON.parse(userData);
 // console.log(users);
 
-// app.get('/', function(request, response) {
-//   if(nowUsersCount >= 1) return response.send(err)
-//   fs.readFile("./public/index.html", function(err, data) {
-//     if(err) {
-//       response.send("에러");
-//     } else {
-//       response.writeHead(200, {'content-type' : 'text/html'});
-//       response.write(data);
-//       response.end();
-//     }
-//   })
-// });
+app.get('/', function(request, response) {
+  if(nowUsersCount >= 1) return response.send(err)
+  fs.readFile("./public/index.html", function(err, data) {
+    if(err) {
+      response.send("에러");
+    } else {
+      response.writeHead(200, {'content-type' : 'text/html'});
+      response.write(data);
+      response.end();
+    }
+  })
+});
 
 // app.post('/login', function(request, response) {
 //   console.log(request)
